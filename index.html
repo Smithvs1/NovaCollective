@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="NOVA Collective is coming soon to Louisville, KY — a private salon studio collective for independent beauty and personal care professionals.">
+  <title>NOVA Collective | Coming Soon to Louisville</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="coming-soon-page">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <main id="main-content" class="coming-soon-main">
+    <section class="coming-soon-hero" aria-labelledby="coming-soon-heading">
+      <div class="coming-soon-media" aria-label="NOVA Collective preview video">
+        <video autoplay muted loop playsinline webkit-playsinline poster="images/nova-logo.png">
+          <source src="videos/nova-hero.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+      </div>
+
+      <div class="coming-soon-content">
+        <header class="coming-soon-header">
+          <img class="coming-soon-logo" src="images/nova-logo.png" alt="NOVA Collective logo">
+          <span>Louisville, KY</span>
+        </header>
+
+        <p class="coming-soon-kicker">A private salon studio collective</p>
+        <h1 id="coming-soon-heading">Coming Soon</h1>
+        <p class="coming-soon-subhead">NOVA Collective is an exclusive, membership-based workspace for independent beauty and personal care professionals ready to operate in a private, premium studio environment.</p>
+
+        <div class="coming-soon-badges" aria-label="NOVA Collective membership highlights">
+          <span><i class="fa-solid fa-key" aria-hidden="true"></i> Private Suites</span>
+          <span><i class="fa-solid fa-crown" aria-hidden="true"></i> Founding Members</span>
+          <span><i class="fa-solid fa-location-dot" aria-hidden="true"></i> Louisville Launch</span>
+        </div>
+
+        <p class="coming-soon-statement">Not Everyone Gets In.</p>
+
+        <section class="coming-soon-form-card" aria-labelledby="interest-heading">
+          <div>
+            <h2 id="interest-heading">Get on the interest list</h2>
+            <p>Be the first to receive Founding Member updates, location announcements, and application details.</p>
+          </div>
+          <div id="interest-status" class="form-status" role="status" aria-live="polite"></div>
+          <form id="interest-form" class="coming-soon-form">
+            <label class="field">
+              <span>Name</span>
+              <input name="name" autocomplete="name" placeholder="Your name">
+            </label>
+            <label class="field">
+              <span>Email*</span>
+              <input name="email" type="email" autocomplete="email" placeholder="you@example.com" required>
+            </label>
+            <label class="field">
+              <span>Specialty</span>
+              <select name="specialty">
+                <option value="">Select specialty</option>
+                <option>Hair Stylist</option>
+                <option>Barber</option>
+                <option>Esthetician</option>
+                <option>Nail Tech</option>
+                <option>Massage Therapist</option>
+                <option>Lash Tech</option>
+                <option>Tattoo Artist</option>
+                <option>Reiki / Wellness</option>
+                <option>Other</option>
+              </select>
+            </label>
+            <button class="btn btn-primary" type="submit">Notify Me</button>
+          </form>
+        </section>
+
+        <nav class="coming-soon-links" aria-label="Secondary navigation">
+          <a href="apply.html">Apply to Join</a>
+          <a href="perks.html">Explore Perks</a>
+          <a href="design-examples.html">Design Studio</a>
+        </nav>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
