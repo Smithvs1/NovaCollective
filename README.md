@@ -38,17 +38,15 @@ The website positions NOVA Collective as an exclusive, membership-based private 
 | Perks | `perks.html` | Benefits of suite rental vs. chair rental | None |
 | Apply | `apply.html` | Founding Member application form | None |
 | Design Examples | `design-examples.html` | Public suite design inspiration gallery | None |
+| Deposit | `deposit.html` | Approved member deposit payment page (private link) | None |
+| Deposit Success | `deposit-success.html` | Post-payment confirmation page | None |
 | Product Page Preview | `products.html` | Placeholder approved-member shopping/vendor resource page | None |
 
 ## Public URLs
 
-- Production website URL: Not published yet.
-- Publishing: Use the **Publish tab** to publish the project and receive the live URL.
-- API endpoints used by the static website:
-  - `POST tables/applications` — create a new professional application.
-  - `GET tables/applications` — available for listing applications if an admin/listing page is added later.
-  - `GET tables/applications/{record_id}` — available for single application review if needed later.
-  - `PATCH tables/applications/{record_id}` — available for status updates if an admin workflow is added later.
+- Production website: `https://www.novacollective.vip`
+- Deployment platform: Vercel
+- API routes are served as Vercel Serverless Functions from the `/api` directory.
 
 ## Data Models, Structures, and Storage Services
 
@@ -73,7 +71,7 @@ Fields:
 
 Storage service:
 
-- RESTful Table API using relative endpoints such as `tables/applications`.
+- Supabase PostgreSQL database via `@supabase/supabase-js` in Vercel serverless functions (`/api/applications`).
 
 ## Assets
 
@@ -89,11 +87,70 @@ Storage service:
 - `images/pro-massage.jpg` — professional massage/spa treatment photo.
 - `videos/nova-hero.mp4` — uploaded hero video used in the homepage top section.
 
+## Production Deployment Setup
+
+### Prerequisites
+
+- [Vercel](https://vercel.com) account (free tier works)
+- [Supabase](https://supabase.com) project
+- [Stripe](https://stripe.com) account with API keys
+
+### 1. Supabase Setup
+
+1. Create a new project at [supabase.com](https://supabase.com)
+2. Open the SQL Editor and run the following migration:
+
+```sql
+create table applications (
+  id uuid default gen_random_uuid() primary key,
+  first_name text,
+  last_name text,
+  email text,
+  phone text,
+  business_name text,
+  specialty text,
+  portfolio text,
+  clientele_size text,
+  message text,
+  status text default 'new',
+  created_display timestamptz
+);
+```
+
+3. Copy the **Project URL** and **service_role key** from **Settings > API**
+
+### 2. Vercel Deployment
+
+1. Import this repository into Vercel
+2. Add the following **Environment Variables** in Vercel project settings:
+   - `SUPABASE_URL` — your Supabase project URL
+   - `SUPABASE_SERVICE_KEY` — your Supabase service_role key
+   - `STRIPE_SECRET_KEY` — your Stripe secret key (starts with `sk_`)
+   - `STRIPE_PUBLISHABLE_KEY` — your Stripe publishable key (starts with `pk_`)
+3. Deploy the project
+
+### 3. Domain Configuration
+
+1. Go to Vercel project > **Settings > Domains**
+2. Add `www.novacollective.vip`
+3. Add the CNAME record Vercel provides to the DNS settings for `novacollective.vip` at your domain registrar
+4. Also add `novacollective.vip` (apex) and configure redirect to `www`
+
+### 4. Stripe Configuration
+
+1. In your Stripe Dashboard, ensure the checkout session settings allow the `success_url` and `cancel_url` domains (`www.novacollective.vip`)
+2. The deposit amount is $500.00 USD, collected via Stripe Checkout
+
+## API Endpoints
+
+| Method | Path | Description |
+|--------|------|-------------|
+| POST | `/api/applications` | Submit a new professional application (stored in Supabase) |
+| POST | `/api/create-checkout-session` | Create a Stripe Checkout session for the $500 deposit |
+
 ## Features Not Yet Implemented
 
 - Real password-protected access for approved members. A static website cannot securely enforce member-only access without an external authentication or membership service.
-- Live e-commerce checkout. The product page currently supports placeholder vendor/affiliate links, not direct cart/checkout functionality.
-- Payment collection for the refundable $500 deposit. This would require a third-party payment provider link or hosted checkout page.
 - Admin dashboard for reviewing applications and changing applicant statuses.
 - Automated email notifications after application submission.
 - Final vendor/affiliate product links and product photography.
@@ -103,10 +160,9 @@ Storage service:
 
 1. Replace placeholder product links in `products.html` with vendor, affiliate, or associate URLs.
 2. Add final professional photography/renderings once suites and interior selections are finalized.
-3. Connect deposit payment CTA to a third-party hosted checkout link after approval workflow is established.
-4. Add an admin-only workflow through an external tool or authenticated platform if private applicant review is required.
-5. Decide how approved members will access the product page: private shared link, membership platform, or password-protected hosting.
-6. Publish the site using the **Publish tab** when ready to go live.
+3. Add an admin-only workflow through an external tool or authenticated platform if private applicant review is required.
+4. Decide how approved members will access the product page: private shared link, membership platform, or password-protected hosting.
+5. Set up Stripe webhook for `checkout.session.completed` to auto-update application status in Supabase.
 
 ## File Structure
 
@@ -114,9 +170,16 @@ Storage service:
 index.html
 perks.html
 apply.html
+deposit.html
+deposit-success.html
 design-examples.html
 products.html
 README.md
+package.json
+vercel.json
+api/
+  applications.js
+  create-checkout-session.js
 css/
   styles.css
 js/
