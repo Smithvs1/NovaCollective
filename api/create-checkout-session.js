@@ -1,6 +1,12 @@
 const Stripe = require('stripe');
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+function getStripe() {
+  const key = process.env.STRIPE_SECRET_KEY;
+  if (!key) {
+    throw new Error('Missing STRIPE_SECRET_KEY environment variable');
+  }
+  return new Stripe(key);
+}
 
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -9,6 +15,7 @@ module.exports = async function handler(req, res) {
   }
 
   try {
+    const stripe = getStripe();
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
       line_items: [
@@ -24,12 +31,12 @@ module.exports = async function handler(req, res) {
         },
       ],
       success_url: 'https://www.novacollective.vip/deposit-success.html',
-      cancel_url: 'https://www.novacollective.vip/deposit.html',
+      cancel_url: 'https://www.novacollective.vip/apply.html',
     });
 
     res.status(200).json({ url: session.url });
   } catch (err) {
     console.error('Stripe checkout error:', err);
-    res.status(500).json({ error: 'Failed to create checkout session' });
+    res.status(500).json({ error: err.message || 'Failed to create checkout session' });
   }
 };

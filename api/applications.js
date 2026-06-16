@@ -1,15 +1,19 @@
 const { createClient } = require('@supabase/supabase-js');
 
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_KEY
-);
-
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': 'https://www.novacollective.vip',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type',
 };
+
+function getSupabase() {
+  const url = process.env.SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_KEY;
+  if (!url || !key) {
+    throw new Error('Missing SUPABASE_URL or SUPABASE_SERVICE_KEY environment variables');
+  }
+  return createClient(url, key);
+}
 
 module.exports = async function handler(req, res) {
   if (req.method === 'OPTIONS') {
@@ -37,6 +41,7 @@ module.exports = async function handler(req, res) {
       created_display,
     } = req.body;
 
+    const supabase = getSupabase();
     const { error } = await supabase.from('applications').insert([
       {
         first_name,
@@ -62,6 +67,6 @@ module.exports = async function handler(req, res) {
     res.status(200).set(CORS_HEADERS).json({ success: true });
   } catch (err) {
     console.error('Server error:', err);
-    res.status(500).set(CORS_HEADERS).json({ error: 'Internal server error' });
+    res.status(500).set(CORS_HEADERS).json({ error: err.message || 'Internal server error' });
   }
 };
