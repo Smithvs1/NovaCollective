@@ -38,6 +38,7 @@ The website positions NOVA Collective as an exclusive, membership-based private 
 | Perks | `perks.html` | Benefits of suite rental vs. chair rental | None |
 | Apply | `apply.html` | Founding Member application form | None |
 | Design Examples | `design-examples.html` | Public suite design inspiration gallery | None |
+| Interest Success | `interest-success.html` | Interest list confirmation page | None |
 | Deposit | `deposit.html` | Approved member deposit payment page (private link) | None |
 | Deposit Success | `deposit-success.html` | Post-payment confirmation page | None |
 | Product Page Preview | `products.html` | Placeholder approved-member shopping/vendor resource page | None |
@@ -72,6 +73,22 @@ Fields:
 Storage service:
 
 - Supabase PostgreSQL database via `@supabase/supabase-js` in Vercel serverless functions (`/api/applications`).
+
+### Table: `interest_list`
+
+Used by `index.html` and `js/main.js` to store interest list signups via `/api/interest`.
+
+Fields:
+
+- `id` — unique signup id.
+- `name` — person's name (optional).
+- `email` — email address (required).
+- `specialty` — professional specialty (optional).
+- `created_at` — timestamp of signup.
+
+Storage service:
+
+- Supabase PostgreSQL database via `@supabase/supabase-js` in Vercel serverless functions (`/api/interest`).
 
 ## Assets
 
@@ -117,7 +134,19 @@ create table applications (
 );
 ```
 
-3. Copy the **Project URL** and **service_role key** from **Settings > API**
+3. Also run this SQL to create the interest list table:
+
+```sql
+create table interest_list (
+  id uuid default gen_random_uuid() primary key,
+  name text,
+  email text not null,
+  specialty text,
+  created_at timestamptz default now()
+);
+```
+
+4. Copy the **Project URL** and **service_role key** from **Settings > API**
 
 ### 2. Vercel Deployment
 
@@ -136,6 +165,16 @@ create table applications (
 3. Add the CNAME record Vercel provides to the DNS settings for `novacollective.vip` at your domain registrar
 4. Also add `novacollective.vip` (apex) and configure redirect to `www`
 
+#### GoDaddy DNS Troubleshooting
+
+If you see `ERR_NAME_NOT_RESOLVED` for `www.novacollective.vip`:
+
+1. Log in to [GoDaddy](https://dcc.godaddy.com) and go to **My Products > DNS**
+2. Delete any existing A or CNAME records for `www`
+3. Add a **CNAME** record: Name = `www`, Value = `cname.vercel-dns.com` (or the value Vercel shows in your domain settings), TTL = 600
+4. For the apex domain (`novacollective.vip`), add an **A** record pointing to `76.76.21.21` (Vercel's IP)
+5. Wait 5–30 minutes for DNS propagation, then verify with `dig www.novacollective.vip`
+
 ### 4. Stripe Configuration
 
 1. In your Stripe Dashboard, ensure the checkout session settings allow the `success_url` and `cancel_url` domains (`www.novacollective.vip`)
@@ -147,6 +186,7 @@ create table applications (
 |--------|------|-------------|
 | POST | `/api/applications` | Submit a new professional application (stored in Supabase) |
 | POST | `/api/create-checkout-session` | Create a Stripe Checkout session for the $500 deposit |
+| POST | `/api/interest` | Save an interest list signup (stored in Supabase `interest_list` table) |
 
 ## Features Not Yet Implemented
 
@@ -172,6 +212,7 @@ perks.html
 apply.html
 deposit.html
 deposit-success.html
+interest-success.html
 design-examples.html
 products.html
 README.md
@@ -180,6 +221,7 @@ vercel.json
 api/
   applications.js
   create-checkout-session.js
+  interest.js
 css/
   styles.css
 js/

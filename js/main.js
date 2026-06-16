@@ -27,6 +27,49 @@
     node.textContent = new Date().getFullYear();
   });
 
+  // Interest list form (index / coming-soon page)
+  const interestForm = document.querySelector('#interest-form');
+  const interestStatus = document.querySelector('#interest-status');
+
+  if (interestForm) {
+    interestForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const submitButton = interestForm.querySelector('button[type="submit"]');
+      const formData = new FormData(interestForm);
+      const payload = Object.fromEntries(formData.entries());
+
+      if (submitButton) {
+        submitButton.disabled = true;
+        submitButton.textContent = 'Submitting...';
+      }
+
+      try {
+        const response = await fetch('/api/interest', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+          throw new Error(`Interest signup failed with status ${response.status}`);
+        }
+
+        window.location.href = 'interest-success.html';
+      } catch (error) {
+        console.error('Interest signup error:', error);
+        if (interestStatus) {
+          interestStatus.textContent = 'We could not submit your information right now. Please try again.';
+          interestStatus.className = 'form-status error';
+        }
+        if (submitButton) {
+          submitButton.disabled = false;
+          submitButton.textContent = 'Notify Me';
+        }
+      }
+    });
+  }
+
+  // Application form (apply page)
   const applicationForm = document.querySelector('#application-form');
   const formStatus = document.querySelector('#form-status');
 
