@@ -104,12 +104,20 @@
           throw new Error(`Application request failed with status ${response.status}`);
         }
 
-        applicationForm.reset();
-        setStatus('Thank you. Your application has been submitted for NOVA Collective review.', 'success');
+        if (submitButton) {
+          submitButton.textContent = 'Redirecting to deposit...';
+        }
+        setStatus('Application saved. Redirecting you to the $500 deposit checkout...', 'success');
+
+        const checkoutResponse = await fetch('/api/create-checkout-session', { method: 'POST' });
+        if (!checkoutResponse.ok) {
+          throw new Error('Could not create checkout session');
+        }
+        const checkoutData = await checkoutResponse.json();
+        window.location.href = checkoutData.url;
       } catch (error) {
         console.error('Application submission error:', error);
-        setStatus('We could not submit the application right now. Please try again, or contact NOVA Collective directly.', 'error');
-      } finally {
+        setStatus('We could not complete the process right now. Please try again, or contact NOVA Collective directly.', 'error');
         if (submitButton) {
           submitButton.disabled = false;
           submitButton.textContent = 'Submit Application';

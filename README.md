@@ -39,8 +39,7 @@ The website positions NOVA Collective as an exclusive, membership-based private 
 | Apply | `apply.html` | Founding Member application form | None |
 | Design Examples | `design-examples.html` | Public suite design inspiration gallery | None |
 | Interest Success | `interest-success.html` | Interest list confirmation page | None |
-| Deposit | `deposit.html` | Approved member deposit payment page (private link) | None |
-| Deposit Success | `deposit-success.html` | Post-payment confirmation page | None |
+| Deposit Success | `deposit-success.html` | Post-deposit confirmation with timeline and refund info | None |
 | Product Page Preview | `products.html` | Placeholder approved-member shopping/vendor resource page | None |
 
 ## Public URLs
@@ -210,7 +209,6 @@ If you see `ERR_NAME_NOT_RESOLVED` for `www.novacollective.vip`:
 index.html
 perks.html
 apply.html
-deposit.html
 deposit-success.html
 interest-success.html
 design-examples.html
