@@ -1,10 +1,10 @@
 const { createClient } = require('@supabase/supabase-js');
 
-const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': 'https://www.novacollective.vip',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type',
-};
+function setCors(res) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+}
 
 function getSupabase() {
   const url = process.env.SUPABASE_URL;
@@ -16,13 +16,15 @@ function getSupabase() {
 }
 
 module.exports = async function handler(req, res) {
+  setCors(res);
+
   if (req.method === 'OPTIONS') {
-    res.status(204).set(CORS_HEADERS).end();
+    res.status(204).end();
     return;
   }
 
   if (req.method !== 'POST') {
-    res.status(405).set(CORS_HEADERS).json({ error: 'Method not allowed' });
+    res.status(405).json({ error: 'Method not allowed' });
     return;
   }
 
@@ -30,7 +32,7 @@ module.exports = async function handler(req, res) {
     const { name, email, specialty } = req.body;
 
     if (!email) {
-      res.status(400).set(CORS_HEADERS).json({ error: 'Email is required' });
+      res.status(400).json({ error: 'Email is required' });
       return;
     }
 
@@ -46,13 +48,13 @@ module.exports = async function handler(req, res) {
 
     if (error) {
       console.error('Supabase insert error:', error);
-      res.status(500).set(CORS_HEADERS).json({ error: 'Failed to save interest signup' });
+      res.status(500).json({ error: 'Failed to save interest signup' });
       return;
     }
 
-    res.status(200).set(CORS_HEADERS).json({ success: true });
+    res.status(200).json({ success: true });
   } catch (err) {
     console.error('Server error:', err);
-    res.status(500).set(CORS_HEADERS).json({ error: err.message || 'Internal server error' });
+    res.status(500).json({ error: err.message || 'Internal server error' });
   }
 };
