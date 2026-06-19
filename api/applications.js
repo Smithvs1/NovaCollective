@@ -1,4 +1,5 @@
 const { createClient } = require('@supabase/supabase-js');
+const nodemailer = require('nodemailer');
 
 function setCors(res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -16,14 +17,14 @@ function getSupabase() {
 }
 
 async function sendNotificationEmail(applicant) {
-  const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey) {
-    console.warn('RESEND_API_KEY not set — skipping email notification');
+  const smtpUser = process.env.SMTP_USER;
+  const smtpPass = process.env.SMTP_PASS;
+  if (!smtpUser || !smtpPass) {
+    console.warn('SMTP_USER/SMTP_PASS not set — skipping email notification');
     return;
   }
 
   const toEmail = process.env.NOTIFICATION_EMAIL || 'support@novacollective.vip';
-  const fromEmail = process.env.RESEND_FROM_EMAIL || 'NOVA Collective <notifications@novacollective.vip>';
 
   const htmlBody = `
     <h2>New NOVA Collective Application</h2>
@@ -42,26 +43,21 @@ async function sendNotificationEmail(applicant) {
   `;
 
   try {
-    const response = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        from: fromEmail,
-        to: [toEmail],
-        subject: `New Application: ${applicant.first_name || ''} ${applicant.last_name || ''} — ${applicant.specialty || 'Unknown Specialty'}`,
-        html: htmlBody,
-      }),
+    const transporter = nodemailer.createTransport({
+      host: process.env.SMTP_HOST || 'mail.privateemail.com',
+      port: parseInt(process.env.SMTP_PORT || '465', 10),
+      secure: true,
+      auth: { user: smtpUser, pass: smtpPass },
     });
 
-    if (!response.ok) {
-      const errBody = await response.text();
-      console.error('Resend email error:', response.status, errBody);
-    } else {
-      console.log('Notification email sent to', toEmail);
-    }
+    await transporter.sendMail({
+      from: `NOVA Collective <${smtpUser}>`,
+      to: toEmail,
+      subject: `New Application: ${applicant.first_name || ''} ${applicant.last_name || ''} — ${applicant.specialty || 'Unknown Specialty'}`,
+      html: htmlBody,
+    });
+
+    console.log('Notification email sent to', toEmail);
   } catch (emailErr) {
     console.error('Email send failed (non-blocking):', emailErr.message);
   }
