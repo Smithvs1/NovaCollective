@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://www.novacollective.vip/sitemap.xml
+
+Disallow: /api/
+Disallow: /deposit-success.html
+Disallow: /interest-success.html
+Disallow: /products.html
