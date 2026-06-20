@@ -69,6 +69,55 @@
     });
   }
 
+  // Suite inspiration carousel
+  const carousel = document.querySelector('.suite-carousel');
+  if (carousel) {
+    const track = carousel.querySelector('.carousel-track');
+    const slides = carousel.querySelectorAll('.carousel-slide');
+    const prevBtn = carousel.querySelector('.carousel-prev');
+    const nextBtn = carousel.querySelector('.carousel-next');
+    const dotsContainer = carousel.querySelector('.carousel-dots');
+    let current = 0;
+    let autoInterval;
+
+    slides.forEach(function (_, i) {
+      var dot = document.createElement('button');
+      dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+      dot.type = 'button';
+      dot.setAttribute('aria-label', 'Go to slide ' + (i + 1));
+      dot.addEventListener('click', function () { goTo(i); });
+      dotsContainer.appendChild(dot);
+    });
+
+    function goTo(index) {
+      current = (index + slides.length) % slides.length;
+      track.style.transform = 'translateX(-' + (current * 100) + '%)';
+      var dots = dotsContainer.querySelectorAll('.carousel-dot');
+      dots.forEach(function (d, i) { d.classList.toggle('active', i === current); });
+    }
+
+    function startAuto() {
+      autoInterval = setInterval(function () { goTo(current + 1); }, 4500);
+    }
+
+    function resetAuto() {
+      clearInterval(autoInterval);
+      startAuto();
+    }
+
+    prevBtn.addEventListener('click', function () { goTo(current - 1); resetAuto(); });
+    nextBtn.addEventListener('click', function () { goTo(current + 1); resetAuto(); });
+
+    var touchStartX = 0;
+    carousel.addEventListener('touchstart', function (e) { touchStartX = e.touches[0].clientX; }, { passive: true });
+    carousel.addEventListener('touchend', function (e) {
+      var diff = touchStartX - e.changedTouches[0].clientX;
+      if (Math.abs(diff) > 50) { goTo(current + (diff > 0 ? 1 : -1)); resetAuto(); }
+    });
+
+    startAuto();
+  }
+
   // Application form (apply page)
   const applicationForm = document.querySelector('#application-form');
   const formStatus = document.querySelector('#form-status');
