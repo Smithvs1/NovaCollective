@@ -48,6 +48,9 @@ async function sendNotificationEmail(applicant) {
       port: parseInt(process.env.SMTP_PORT || '465', 10),
       secure: true,
       auth: { user: smtpUser, pass: smtpPass },
+      connectionTimeout: 10000,
+      greetingTimeout: 10000,
+      socketTimeout: 15000,
     });
 
     await transporter.sendMail({
@@ -114,10 +117,11 @@ module.exports = async function handler(req, res) {
       return;
     }
 
-    sendNotificationEmail({
+    // Await email before responding — Vercel kills the function after res is sent
+    await sendNotificationEmail({
       first_name, last_name, email, phone,
       business_name, specialty, portfolio, clientele_size, message,
-    }).catch(err => console.error('Email notification error:', err));
+    });
 
     res.status(200).json({ success: true });
   } catch (err) {
