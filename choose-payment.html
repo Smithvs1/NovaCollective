@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Complete Your Deposit | NOVA Collective</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <header class="site-header"><nav class="nav-shell" aria-label="Main navigation"><a class="brand" href="index.html"><img class="brand-logo" src="images/nova-logo.png" alt="NOVA Collective logo"><span class="brand-mark">Louisville</span></a><button class="mobile-menu-toggle" type="button" aria-expanded="false" aria-controls="primary-nav"><i class="fa-solid fa-bars"></i><span class="sr-only">Menu</span></button><div class="primary-nav" id="primary-nav"><a href="index.html">Home</a><a href="index.html#location-section">Location</a><a href="perks.html">Perks</a><a href="design-examples.html">Design Studio</a><a href="apply.html">Apply</a></div></nav></header>
+  <main id="main-content">
+    <section class="page-hero">
+      <div class="section-shell">
+        <span class="eyebrow">Almost there</span>
+        <h1>Complete Your Deposit</h1>
+        <p class="hero-intro">Your application has been received. Choose your preferred payment method to secure your founding member spot.</p>
+      </div>
+    </section>
+    <section class="section-shell payment-choice-section">
+      <div class="payment-choice-card">
+        <h2>Choose Payment Method</h2>
+        <p class="modal-subtitle">Select how you'd like to pay your $500 founding member deposit.</p>
+        <div class="payment-options">
+          <button class="payment-option" id="pay-ach">
+            <span class="payment-option-icon"><i class="fa-solid fa-building-columns"></i></span>
+            <span class="payment-option-details">
+              <strong>Bank Transfer (ACH)</strong>
+              <span class="payment-option-total">$503.00</span>
+              <span class="payment-option-fee">Includes $3.00 processing fee</span>
+            </span>
+          </button>
+          <button class="payment-option" id="pay-card">
+            <span class="payment-option-icon"><i class="fa-solid fa-credit-card"></i></span>
+            <span class="payment-option-details">
+              <strong>Credit / Debit Card</strong>
+              <span class="payment-option-total">$517.45</span>
+              <span class="payment-option-fee">Includes 3.49% processing fee</span>
+            </span>
+          </button>
+        </div>
+        <p class="payment-disclosure">Processing fees are charged by the payment processor and passed through at cost. NOVA Collective does not profit from these fees.</p>
+        <div class="payment-cancel-row">
+          <a href="index.html" class="payment-cancel-link">Cancel and return to homepage</a>
+        </div>
+        <p class="payment-warning">If you leave without completing payment, contact <a href="mailto:support@novacollective.vip">support@novacollective.vip</a> to receive a new payment link.</p>
+      </div>
+    </section>
+  </main>
+  <footer class="site-footer"><div class="footer-grid"><section><img class="footer-logo" src="images/nova-logo.png" alt="NOVA Collective logo"><p>Private studio collective for Louisville beauty and personal care professionals.</p></section><section><h2>Explore</h2><nav class="footer-links"><a href="index.html">Home</a><a href="perks.html">Perks</a><a href="design-examples.html">Design Studio</a></nav></section><section><h2>Legal</h2><nav class="footer-links"><a href="privacy-policy.html">Privacy Policy</a><a href="terms-of-service.html">Terms of Service</a></nav></section></div><div class="footer-bottom">© <span data-year></span> NOVA Collective. Louisville, Kentucky.</div></footer>
+  <script src="js/main.js"></script>
+  <script>
+  (function() {
+    async function startCheckout(method) {
+      document.querySelectorAll('.payment-option').forEach(b => { b.disabled = true; });
+      try {
+        const response = await fetch('/api/create-checkout-session', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ payment_method: method }),
+        });
+        if (!response.ok) {
+          const errData = await response.json().catch(() => ({}));
+          throw new Error(errData.error || 'Could not create checkout session');
+        }
+        const data = await response.json();
+        window.location.href = data.url;
+      } catch (err) {
+        console.error('Checkout error:', err);
+        alert('Payment setup failed: ' + err.message + '. Please try again or contact support@novacollective.vip');
+        document.querySelectorAll('.payment-option').forEach(b => { b.disabled = false; });
+      }
+    }
+
+    document.getElementById('pay-ach').addEventListener('click', () => startCheckout('ach'));
+    document.getElementById('pay-card').addEventListener('click', () => startCheckout('card'));
+  })();
+  </script>
+</body>
+</html>

@@ -1122,3 +1122,46 @@ main > section { padding: 96px 0; }
   line-height: 1.4;
   text-align: center;
 }
+.payment-choice-section {
+  padding: 60px 0 100px;
+}
+.payment-choice-card {
+  max-width: 520px;
+  margin: 0 auto;
+  background: var(--white);
+  border-radius: 24px;
+  padding: clamp(32px, 5vw, 56px);
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.08);
+}
+.payment-choice-card h2 {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 1.6rem;
+  font-weight: 800;
+  margin: 0 0 8px;
+  color: var(--dark);
+}
+.payment-cancel-row {
+  margin-top: 24px;
+  text-align: center;
+}
+.payment-cancel-link {
+  display: inline-block;
+  font-size: 0.9rem;
+  color: #666;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.payment-cancel-link:hover {
+  color: var(--dark);
+}
+.payment-warning {
+  margin: 12px 0 0;
+  font-size: 0.78rem;
+  color: #b5572a;
+  line-height: 1.4;
+  text-align: center;
+}
+.payment-warning a {
+  color: #b5572a;
+  text-decoration: underline;
+}
