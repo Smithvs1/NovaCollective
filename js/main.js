@@ -160,21 +160,28 @@
 
         const overlay = document.getElementById('payment-method-overlay');
         if (overlay) {
-          overlay.hidden = false;
+          overlay.classList.add('active');
           overlay.scrollIntoView({ behavior: 'smooth' });
 
           async function startCheckout(method) {
             overlay.querySelectorAll('button').forEach(b => { b.disabled = true; });
-            const checkoutResponse = await fetch('/api/create-checkout-session', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ payment_method: method }),
-            });
-            if (!checkoutResponse.ok) {
-              throw new Error('Could not create checkout session');
+            try {
+              const checkoutResponse = await fetch('/api/create-checkout-session', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ payment_method: method }),
+              });
+              if (!checkoutResponse.ok) {
+                const errData = await checkoutResponse.json().catch(() => ({}));
+                throw new Error(errData.error || 'Could not create checkout session');
+              }
+              const checkoutData = await checkoutResponse.json();
+              window.location.href = checkoutData.url;
+            } catch (err) {
+              console.error('Checkout error:', err);
+              alert('Payment setup failed: ' + err.message + '. Please try again or contact support@novacollective.vip');
+              overlay.querySelectorAll('button').forEach(b => { b.disabled = false; });
             }
-            const checkoutData = await checkoutResponse.json();
-            window.location.href = checkoutData.url;
           }
 
           document.getElementById('pay-ach').addEventListener('click', () => startCheckout('ach'));
