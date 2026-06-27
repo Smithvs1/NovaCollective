@@ -154,16 +154,32 @@
         }
 
         if (submitButton) {
-          submitButton.textContent = 'Redirecting to deposit...';
+          submitButton.textContent = 'Application Saved!';
         }
-        setStatus('Application saved. Redirecting you to the $500 deposit checkout...', 'success');
+        setStatus('Application saved. Please choose your payment method below.', 'success');
 
-        const checkoutResponse = await fetch('/api/create-checkout-session', { method: 'POST' });
-        if (!checkoutResponse.ok) {
-          throw new Error('Could not create checkout session');
+        const overlay = document.getElementById('payment-method-overlay');
+        if (overlay) {
+          overlay.hidden = false;
+          overlay.scrollIntoView({ behavior: 'smooth' });
+
+          async function startCheckout(method) {
+            overlay.querySelectorAll('button').forEach(b => { b.disabled = true; });
+            const checkoutResponse = await fetch('/api/create-checkout-session', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ payment_method: method }),
+            });
+            if (!checkoutResponse.ok) {
+              throw new Error('Could not create checkout session');
+            }
+            const checkoutData = await checkoutResponse.json();
+            window.location.href = checkoutData.url;
+          }
+
+          document.getElementById('pay-ach').addEventListener('click', () => startCheckout('ach'));
+          document.getElementById('pay-card').addEventListener('click', () => startCheckout('card'));
         }
-        const checkoutData = await checkoutResponse.json();
-        window.location.href = checkoutData.url;
       } catch (error) {
         console.error('Application submission error:', error);
         setStatus('We could not complete the process right now. Please try again, or contact NOVA Collective directly.', 'error');

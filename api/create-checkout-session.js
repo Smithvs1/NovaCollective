@@ -8,6 +8,10 @@ function getStripe() {
   return new Stripe(key);
 }
 
+const BASE_AMOUNT = 50000; // $500.00 deposit
+const ACH_FEE_CENTS = 300; // $3.00 flat ACH convenience fee
+const CARD_FEE_RATE = 0.0349; // 3.49% card processing fee passed to tenant
+
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'Method not allowed' });
@@ -16,20 +20,58 @@ module.exports = async function handler(req, res) {
 
   try {
     const stripe = getStripe();
-    const session = await stripe.checkout.sessions.create({
-      mode: 'payment',
-      line_items: [
+    const { payment_method } = req.body || {};
+
+    let paymentMethodTypes;
+    let lineItems;
+
+    if (payment_method === 'ach') {
+      paymentMethodTypes = ['us_bank_account'];
+      lineItems = [
         {
           price_data: {
             currency: 'usd',
-            product_data: {
-              name: 'NOVA Collective Founding Member Deposit',
-            },
-            unit_amount: 50000,
+            product_data: { name: 'NOVA Collective Founding Member Deposit' },
+            unit_amount: BASE_AMOUNT,
           },
           quantity: 1,
         },
-      ],
+        {
+          price_data: {
+            currency: 'usd',
+            product_data: { name: 'ACH Processing Fee' },
+            unit_amount: ACH_FEE_CENTS,
+          },
+          quantity: 1,
+        },
+      ];
+    } else {
+      paymentMethodTypes = ['card'];
+      const cardFee = Math.ceil(BASE_AMOUNT * CARD_FEE_RATE);
+      lineItems = [
+        {
+          price_data: {
+            currency: 'usd',
+            product_data: { name: 'NOVA Collective Founding Member Deposit' },
+            unit_amount: BASE_AMOUNT,
+          },
+          quantity: 1,
+        },
+        {
+          price_data: {
+            currency: 'usd',
+            product_data: { name: 'Card Processing Fee' },
+            unit_amount: cardFee,
+          },
+          quantity: 1,
+        },
+      ];
+    }
+
+    const session = await stripe.checkout.sessions.create({
+      mode: 'payment',
+      payment_method_types: paymentMethodTypes,
+      line_items: lineItems,
       success_url: 'https://www.novacollective.vip/deposit-success.html',
       cancel_url: 'https://www.novacollective.vip/apply.html',
     });

@@ -1018,3 +1018,104 @@ main > section { padding: 96px 0; }
   .carousel-prev { left: 8px; }
   .carousel-next { right: 8px; }
 }
+
+/* Payment method selection */
+.payment-method-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  backdrop-filter: blur(4px);
+}
+.payment-method-modal {
+  background: var(--white);
+  border-radius: 24px;
+  padding: clamp(32px, 5vw, 56px);
+  max-width: 520px;
+  width: 100%;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.3);
+}
+.payment-method-modal h2 {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 1.6rem;
+  font-weight: 800;
+  margin: 0 0 8px;
+  color: var(--dark);
+}
+.payment-method-modal .modal-subtitle {
+  color: #5f6673;
+  font-size: 0.95rem;
+  margin: 0 0 28px;
+  line-height: 1.5;
+}
+.payment-options {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.payment-option {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  width: 100%;
+  padding: 20px 24px;
+  border: 2px solid #e5e5e5;
+  border-radius: 16px;
+  background: #fafafa;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, transform 0.1s;
+  text-align: left;
+}
+.payment-option:hover {
+  border-color: var(--gold);
+  background: #fff;
+  transform: translateY(-1px);
+}
+.payment-option:active {
+  transform: translateY(0);
+}
+.payment-option:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+.payment-option-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: var(--dark);
+  color: var(--white);
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+.payment-option-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.payment-option-details strong {
+  font-size: 1.05rem;
+  color: var(--dark);
+}
+.payment-option-total {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--dark);
+}
+.payment-option-fee {
+  font-size: 0.82rem;
+  color: #888;
+}
+.payment-disclosure {
+  margin: 20px 0 0;
+  font-size: 0.78rem;
+  color: #999;
+  line-height: 1.4;
+  text-align: center;
+}
