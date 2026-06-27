@@ -73,7 +73,7 @@ module.exports = async function handler(req, res) {
       payment_method_types: paymentMethodTypes,
       line_items: lineItems,
       success_url: 'https://www.novacollective.vip/deposit-success.html',
-      cancel_url: 'https://www.novacollective.vip/apply.html',
+      cancel_url: 'https://www.novacollective.vip/choose-payment.html',
     };
 
     if (payment_method === 'ach') {
