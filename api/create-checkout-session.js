@@ -68,13 +68,23 @@ module.exports = async function handler(req, res) {
       ];
     }
 
-    const session = await stripe.checkout.sessions.create({
+    const sessionParams = {
       mode: 'payment',
       payment_method_types: paymentMethodTypes,
       line_items: lineItems,
       success_url: 'https://www.novacollective.vip/deposit-success.html',
       cancel_url: 'https://www.novacollective.vip/apply.html',
-    });
+    };
+
+    if (payment_method === 'ach') {
+      sessionParams.payment_method_options = {
+        us_bank_account: {
+          financial_connections: { permissions: ['payment_method'] },
+        },
+      };
+    }
+
+    const session = await stripe.checkout.sessions.create(sessionParams);
 
     res.status(200).json({ url: session.url });
   } catch (err) {
