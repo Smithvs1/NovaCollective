@@ -9,8 +9,8 @@ function getStripe() {
 }
 
 const BASE_AMOUNT = 50000; // $500.00 deposit
-const ACH_FEE_CENTS = 300; // $3.00 flat ACH convenience fee
-const CARD_FEE_RATE = 0.0349; // 3.49% card processing fee passed to tenant
+const ACH_FEE_CENTS = 400; // $4.00 flat ACH processing fee
+const CARD_FEE_CENTS = 1500; // $15.00 flat card processing fee
 
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -47,7 +47,6 @@ module.exports = async function handler(req, res) {
       ];
     } else {
       paymentMethodTypes = ['card'];
-      const cardFee = Math.ceil(BASE_AMOUNT * CARD_FEE_RATE);
       lineItems = [
         {
           price_data: {
@@ -61,7 +60,7 @@ module.exports = async function handler(req, res) {
           price_data: {
             currency: 'usd',
             product_data: { name: 'Card Processing Fee' },
-            unit_amount: cardFee,
+            unit_amount: CARD_FEE_CENTS,
           },
           quantity: 1,
         },
