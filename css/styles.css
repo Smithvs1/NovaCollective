@@ -1165,3 +1165,26 @@ main > section { padding: 96px 0; }
   color: #b5572a;
   text-decoration: underline;
 }
+
+/* Homepage lead capture section */
+.lead-section {
+  background: var(--ink);
+}
+.lead-panel {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: center;
+}
+.lead-copy .section-kicker { color: var(--gold); }
+.lead-copy .section-title { color: var(--white); }
+.lead-copy .section-lede { color: rgba(255,255,255,.72); }
+.lead-form-card {
+  background: rgba(255,255,255,.96);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  padding: clamp(24px, 4vw, 42px);
+}
+@media (max-width: 768px) {
+  .lead-panel { grid-template-columns: 1fr; gap: 28px; }
+}
